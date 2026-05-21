@@ -16,6 +16,16 @@
 
 ---
 
+## 📜 Origin & Historical Journey
+
+The visionary design and core architecture of this operating system have been under active development since the **middle of 2021**. The Softsasi team remains deeply committed to developing **Agami OS** — a robust, localized, and highly user-friendly operating system designed specifically for the needs of Bangladeshi schools, educators, and students.
+
+*   **📅 Mid-2021 — The Spark**: Commenced intensive research, local usability studies, and driver-compatibility mapping to create a specialized, student-centric desktop environment.
+*   **🚀 Q4 2022 — Version 1.0 Release**: Officially launched the first stable edition of Agami OS in the last quarter of 2022, establishing our footprint in school-accessible open-source computing.
+*   **🔮 2026 & Beyond — Version 2.0 & Next**: Continually evolving Agami OS with state-of-the-art offline dashboards, system-wide autostart typing utilities, custom GRUB visual skins, and automated installer pipelines.
+
+---
+
 **Agami OS Education** is a premium, high-fidelity custom operating system engineered specifically for students, teachers, and schools. Designed and built by **[Softsasi](https://www.softsasi.com)**, it rides on a customized **Debian 13 (Trixie)** base paired with the modern **GNOME desktop environment**. 
 
 It wraps cutting-edge offline learning software, interactive educational suites, and instant language tools in an elegant, glassmorphic visual wrapper that makes technology intuitive and engaging for learners worldwide.
@@ -251,6 +261,47 @@ If you are developing inside a Linux terminal environment, you can run these com
      -no-emul-boot -isohybrid-gpt-basdat \
      extracted_iso/
    ```
+
+---
+
+## 🛠️ Version 2.0 Engineering Customization Walkthrough
+
+To ensure we can easily maintain and upgrade the custom OS in the future, here is the detailed technical breakdown of the exact customizations designed and integrated into **Agami OS Education Version 2.0**:
+
+### 1. Keyboard & Desktop Initialization Script
+*   **Script Location**: `/usr/local/bin/agami-init.sh`
+*   **Trigger Mechanism**: System-wide autostart launcher placed at `/etc/xdg/autostart/agami-init.desktop` which executes automatically upon user login.
+*   **Rationale**: Live GNOME systems ignore standard pre-boot system-wide input overrides. To solve this, `agami-init.sh` runs as a post-login user agent to:
+    1. Register English (`us`) and Bangla Phonetic (`ibus` via `m17n:bn:phonetic`) out-of-the-box keyboard input sources.
+    2. Activate the language indicator dropdown in the top GNOME status panel.
+    3. Dynamically set our custom 4K system wallpaper for both light and dark GNOME layouts.
+*   **Core Commands**:
+    ```bash
+    # Registers US XKB and Bangla Phonetic m17n layouts
+    gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('ibus', 'm17n:bn:phonetic')]"
+    
+    # Enables the GNOME input switcher visible status bar
+    gsettings set org.gnome.desktop.input-sources show-all-sources true
+    ```
+
+### 2. Glassmorphic Agami Education Hub
+*   **Installation Directory**: `/usr/share/agami-hub/`
+*   **Access shortcuts**: Programmed into `/etc/skel/Desktop/agami-hub.desktop` so that every live session user receives a launcher icon directly on their desktop.
+*   **Integrated Modules**:
+    *   **STEM Simulators**: Quick action buttons launching local Geography, Astronomy, Physics, and Chemistry tools.
+    *   **Phonetic Typing Sandbox**: A locally-rendered typing simulator with active character count diagnostics and graphic layout charts for learning Bangla phonetic inputs.
+    *   **USB Persistence**: A complete, step-by-step Rufus and Ventoy tutorial explaining how to allocate persistent volume partition sliders.
+
+### 3. Custom UEFI & Legacy BIOS Boot Splash Screens
+*   **Target Files**: UEFI GRUB splash (`/boot/grub/splash.png`) and Legacy BIOS splash (`/isolinux/splash.png`).
+*   **Action**: The Python build orchestrator automatically copies our high-resolution glowing cybernetic theme banner directly into these paths, replacing the default Debian splash images for branded aesthetics from the first second of booting.
+
+### 4. Educational Software Installer Pipeline
+*   **Desktop Shortcut**: `/etc/skel/Desktop/agami-install-software.desktop` pointing to the script `/usr/local/bin/agami-install-software.sh`.
+*   **Objective**: Pre-caching massive flatpaks and apps inside the raw live filesystem causes high image size inflation. This script allows users with active internet to easily:
+    1. Retrieve and configure Brave Browser secure apt keys.
+    2. Install the complete LibreOffice suite (with Bangla localization/help files), Kiwix Desktop, GCompris Qt learning center, Tuxmath, Scratch, GeoGebra, and physics/chemistry simulators.
+    3. Automatically run system cleanups and autoremoves to prevent storage build-up on the persistent partition.
 
 ---
 
