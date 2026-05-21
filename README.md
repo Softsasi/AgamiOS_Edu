@@ -1,89 +1,155 @@
-# Agami OS Education 🎓
+# <p align="center"><img src="agami_banner.svg" width="100%" alt="Agami OS Education Banner" /></p>
 
-[![Base](https://img.shields.io/badge/Base-Debian%2013%20%28Trixie%29-blue?logo=debian)](https://www.debian.org/)
-[![Desktop](https://img.shields.io/badge/Desktop-GNOME-purple?logo=gnome)](https://www.gnome.org/)
-[![Platform](https://img.shields.io/badge/Build%20Platform-Windows-0078D4?logo=windows)](https://microsoft.com/)
+<div align="center">
 
-**Agami OS Education** is a premium, customized educational operating system built by **[Softsasi](https://www.softsasi.com)** on top of **Debian 13 (Trixie)** stable release featuring the sleek and modern **GNOME desktop environment**. Designed specifically for students and educators, it integrates tailored learning tools, custom branding, and a beautiful offline learning portal.
+[![Base](https://img.shields.io/badge/Base-Debian%2013%20%28Trixie%29-blue?style=for-the-badge&logo=debian&logoColor=white)](https://www.debian.org/)
+[![Desktop](https://img.shields.io/badge/Desktop-GNOME%2045-purple?style=for-the-badge&logo=gnome&logoColor=white)](https://www.gnome.org/)
+[![Platform](https://img.shields.io/badge/Build%20Platform-Windows-0078D4?style=for-the-badge&logo=windows&logoColor=white)](https://microsoft.com/)
+[![License](https://img.shields.io/badge/License-GPL%20v3-green?style=for-the-badge)](https://gnu.org/licenses/gpl.html)
 
-This repository hosts the **Windows-native build system** that automates the downloading, deconstructing, customizing, and repacking of the Debian Live ISO directly on standard Windows environments without requiring WSL or Docker.
-
----
-
-## Key Features 🚀
-
-*   **Premium Branding**: Custom 4K gradient desktop background with the official **Agami OS** logo dynamically set for light and dark modes.
-*   **GNOME Desktop Experience**: Clean, intuitive, and modern user experience with customized settings.
-*   **Agami Education Hub**: A built-in offline educational dashboard featuring:
-    *   Interactive math and science utilities.
-    *   Self-guided learning modules and quizzes.
-    *   Offline reference guides, textbooks, and documentation.
-    *   Direct launcher shortcut right on the desktop.
-*   **Legacy BIOS & Modern UEFI Booting**: Fully hybrid bootable ISO utilizing advanced Isolinux, GRUB, and EFI partition parameters.
+</div>
 
 ---
 
-## Custom OS Architecture 📂
+**Agami OS Education** is a premium, high-fidelity custom operating system engineered specifically for students, teachers, and schools. Designed and built by **[Softsasi](https://www.softsasi.com)**, it rides on a customized **Debian 13 (Trixie)** base paired with the modern **GNOME desktop environment**. 
+
+It wraps cutting-edge offline learning software, interactive educational suites, and instant language tools in an elegant, glassmorphic visual wrapper that makes technology intuitive and engaging for learners worldwide.
+
+This repository hosts our custom **Windows-native build orchestration system** that extracts, customizes, and repacks bootable hybrid ISOs directly in standard Windows command line environments without demanding WSL, Hyper-V, or Docker.
+
+---
+
+## ⚡ Interactive Feature Highlights
+
+<details open>
+<summary><b>🎨 Glassmorphic Agami Education Hub (Offline Portal)</b></summary>
+<br/>
+
+The crown jewel of Version 2.0. A built-in offline educational dashboard featuring:
+*   **Offline STEM Libraries**: Quick launcher shortcuts for Geography, Astronomy, Physics, and Chemistry simulation software.
+*   **Offline Wikipedia / Reference**: Direct hookups to the Kiwix Desktop reader for completely network-independent knowledge retrieval.
+*   **Bangla Typing Sandbox**: An offline sandbox with live word count diagnostics, complete with a graphic Phonetic layout reference guide.
+*   **Interactive Design**: Crafted with a premium dark-slate glassmorphic teal theme, responsive cards, and dynamic hovering actions.
+
+</details>
+
+<details>
+<summary><b>🇧🇩 Out-of-the-Box Bangla Phonetic Keyboard Integration</b></summary>
+<br/>
+
+No more complex layout troubleshooting for students:
+*   **System Autostart Hook**: Custom initialization daemon (`/usr/local/bin/agami-init.sh`) runs instantly on GNOME login.
+*   **Layout Registration**: Pre-registers English (`us`) and Bangla Phonetic (`ibus-m17n:bn:phonetic`) layouts, making them switchable instantly via `Super + Space`.
+*   **GNOME Desktop Bar**: Anchors the standard layout switcher directly on the status pane for visual clarity.
+
+</details>
+
+<details>
+<summary><b>💾 Persistent USB Storage Support</b></summary>
+<br/>
+
+Run directly from a USB stick without losing your work:
+*   Includes detailed step-by-step Rufus & Ventoy guide inside the portal.
+*   Explains exactly how to configure partition sliders to allow saving files, desktop customizations, and post-installed educational packages between reboots.
+
+</details>
+
+<details>
+<summary><b>🖥️ Themed UEFI & Legacy BIOS Boot Splash Screens</b></summary>
+<br/>
+
+Professionalism from the very first second:
+*   Standard Debian boot loaders are customized with a gorgeous glowing cybernetic emblem splash graphic.
+*   Applies smoothly for both modern UEFI (`/boot/grub/splash.png`) and legacy BIOS (`/isolinux/splash.png`) configurations.
+
+</details>
+
+---
+
+## 📂 Architecture & Build Layout
 
 ```
 Agami_OS_Education/
-├── .gitignore                   # Excludes large binaries/ISOs from Git
-├── README.md                    # Project documentation
-├── build_agami.py               # Main Python build orchestrator
-├── logo.png                     # Official Agami OS Logo
-├── wallpaper_4k.png             # Generated 4K custom desktop wallpaper
+├── .gitignore                   # Safe-excludes massive ISO/Tar build files
+├── README.md                    # This gorgeous, interactive documentation
+├── ROADMAP.md                   # Full package-by-package software install list
+├── build_agami.py               # Main Windows-native build orchestration script
+├── logo.png                     # Official Agami OS branding logo
+├── wallpaper.png                # Custom 4K gradient desktop background
+├── boot_splash.png              # Themed bootloader splash background image
+├── agami_banner.svg             # Glowing, animated SVG banner for GitHub
 ├── tools/                       # Downloaded native Windows utilities (Git-ignored)
-│   ├── mksquashfs.exe           # SquashFS packer
-│   ├── unsquashfs.exe         # SquashFS unpacker
-│   └── xorriso.exe              # Bootable hybrid ISO generator
-├── agami_hub/                   # Source for the Agami Education Hub
-│   ├── index.html               # Main dashboard portal
-│   ├── css/                     # Sleek premium styles
-│   └── js/                      # Interactive logic & learning modules
-└── build_files/                 # System configuration overrides
-    ├── agami-init.sh            # Live OS boot initialization script
-    ├── agami-init.desktop       # System autostart configuration entry
-    └── Agami Education Hub.desktop # Desktop launcher for the Hub
+│   ├── tar2sqfs.exe             # High-speed SquasFS tar parser
+│   ├── sqfs2tar.exe             # SquashFS unpacker
+│   └── xorriso.exe              # Bootable hybrid ISO orchestrator
+└── agami_hub/                   # Offline Agami Education Hub dashboard
+    ├── index.html               # Main dashboard portal
+    ├── style.css                # Slate-teal glassmorphic layout stylesheet
+    └── script.js                # Sandbox logic & interactive transitions
 ```
 
 ---
 
-## How It Works (Windows-Native Build Pipeline) 🛠️
+## 🛠️ Windows-Native Build Pipeline
 
-Since the build is performed on Windows without virtualization, we use native Windows executables compiled for binary manipulation:
+The system is constructed natively on Windows utilizing pre-compiled binaries to bypass POSIX barriers:
 
-1.  **Deconstruction**: The build script extracts the official Debian GNOME Live ISO using `7-Zip` and unpacks the compressed root filesystem (`filesystem.squashfs`) using a Windows-native `unsquashfs.exe`.
-2.  **Customization**:
-    *   Injects the **Agami Education Hub** files into `/usr/share/agami-hub/`.
-    *   Configures system skeletons `/etc/skel/` so that every logged-in user automatically receives the desktop shortcuts and custom backgrounds.
-    *   Injects an autostart daemon `/etc/xdg/autostart/agami-init.desktop` that triggers a startup script `/usr/local/bin/agami-init.sh` upon booting to apply GNOME overrides (e.g., setting the wallpaper) dynamically inside the Linux environment.
-3.  **Reconstruction**:
-    *   Repacks the root filesystem back to high-compression SquashFS using `mksquashfs.exe`.
-    *   Generates a fully bootable hybrid ISO using `xorriso.exe` with precise boot sector and EFI system partition arguments.
+```mermaid
+graph TD
+    A[Debian 13 GNOME ISO] -->|7-Zip Extract| B(ISO Boot Structures)
+    A -->|Extract MBR Sector| C[isohdpfx.bin Bootloader Template]
+    B -->|sqfs2tar.exe| D[filesystem.tar ~3.1GB]
+    D -->|Inject Assets & Configs| E[filesystem_custom.tar]
+    E -->|tar2sqfs.exe - XZ Level 3| F[filesystem.squashfs]
+    F -->|Replace inside Boot Structure| G(Reassembled ISO folder)
+    G -->|xorriso.exe + MBR| H[Agami_OS_Education.iso 3.81GB]
+```
 
----
-
-## Build Prerequisites 📋
-
-*   **Operating System**: Windows 10 or 11 (64-bit).
-*   **Python**: Version 3.10 or higher.
-*   **7-Zip**: Installed at `C:\Program Files\7-Zip\` (used for fast extraction).
-*   **Logo File**: Located in the project root as `logo.png`.
-
----
-
-## Developer Guide: Run the Build ⚙️
-
-To build the custom operating system image:
-
-1.  Place your official logo as `logo.png` in the repository root.
-2.  Open your Windows command prompt/PowerShell inside this directory.
-3.  Run the build orchestration script:
-    ```powershell
-    python build_agami.py
-    ```
-4.  The script will automatically download the required toolchain, retrieve the official Debian live base, apply the modifications, and output `Agami_OS_Education.iso` in the workspace.
+### Build Steps:
+1. **Deconstruction**: The script automatically downloads SquashFS and `xorriso` toolsets, then parses the base Debian Live ISO using local `7-Zip`.
+2. **Customization Injection**: 
+   * Injects the **Agami Education Hub** into `/usr/share/agami-hub/`.
+   * Overrides user templates `/etc/skel/` with shortcuts, autostarts, and system configurations.
+   * Modifies GRUB and ISOLINUX splash assets.
+3. **Recompression**: Compresses the customized root tree back to SquashFS utilizing maximum multi-threaded XZ compression.
+4. **Mastering**: Compiles a hybrid ISO image bootable on both UEFI and legacy hardware.
 
 ---
 
-*Agami OS Education is developed and built by [Softsasi](https://www.softsasi.com), an open-source initiative designed to bring beautiful, robust, and accessible educational environments to students globally.*
+## 🔮 Future Vision (Agami OS Version 3.0 & Beyond)
+
+As we look toward the future of offline and accessible education, we plan to implement the following core upgrades in upcoming versions of Agami OS:
+
+| Phase | Milestone | Description | Est. Timeline |
+| :--- | :--- | :--- | :--- |
+| **Phase 1** | **📦 100% Offline OER Pre-Caching** | Pre-bake full educational suites, Khan Academy offline content, and regional Wikipedia databases into the local SquashFS, removing the need for internet downloads. | *Q3 2026* |
+| **Phase 2** | **🔌 Non-Free Driver Integration** | Out-of-the-box support for Broadcom, Realtek, and Intel Wi-Fi and Bluetooth drivers to ensure flawless performance on older school-provided laptops. | *Q4 2026* |
+| **Phase 3** | **🤝 Agami Welcomer Assistant** | A beautiful, GUI setup wizard (GTK4) greeting students on first boot to easily choose languages, perform audio checks, and test screen readers. | *Q1 2027* |
+| **Phase 4** | **🛡️ Classroom Sandbox & Controls** | Integrated profiles for schools allowing teachers to lock down systems to specific educational sandboxes and monitor student terminals. | *Q2 2027* |
+| **Phase 5** | **🪶 Ultra-Lightweight Spin** | A secondary XFCE or LXQt-based edition specifically optimized for obsolete computers with 1GB to 2GB of RAM. | *Q3 2027* |
+
+---
+
+## 📋 Build Prerequisites
+
+To compile the ISO locally from your Windows machine:
+* **Operating System**: Windows 10 or 11 (64-bit).
+* **Python**: Version 3.10 or higher.
+* **7-Zip**: Installed at `C:\Program Files\7-Zip\` (used for ultra-fast deconstruction).
+* **Workspace Assets**: Make sure `logo.png`, `wallpaper.png`, and `boot_splash.png` are in the project root.
+
+---
+
+## ⚙️ Developer Guide: Compile Now
+
+1. Place your configuration assets in the repository root.
+2. Launch terminal or PowerShell in the project directory.
+3. Trigger the Python builder:
+   ```powershell
+   python build_agami.py
+   ```
+4. The script will automatically assemble all folders and output `Agami_OS_Education.iso` directly in the project directory.
+
+---
+**Agami OS Education** is developed and supported by **Softsasi** ([www.softsasi.com](https://www.softsasi.com)). 
+For educational sponsorships, school rollouts, or technical support, reach out to us at [support@agami.softsasi.com](mailto:support@agami.softsasi.com).

@@ -1,0 +1,232 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0f1d" />
+      <stop offset="50%" stop-color="#07162c" />
+      <stop offset="100%" stop-color="#020813" />
+    </linearGradient>
+
+    <!-- Teal/Cyan Glow Gradient -->
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f2fe" />
+      <stop offset="100%" stop-color="#4facfe" />
+    </linearGradient>
+
+    <!-- Purple/Indigo Gradient -->
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#b180ff" />
+      <stop offset="100%" stop-color="#7000ff" />
+    </linearGradient>
+
+    <!-- Radial Glow Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="heavyGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="15" result="blur" />
+      <feComponentTransfer in="blur" result="brightBlur">
+        <feFuncA type="linear" slope="1.5"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode in="brightBlur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <style>
+    /* Font Loading */
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;800&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap');
+
+    .title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      fill: url(#tealGrad);
+      font-size: 38px;
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 300;
+      fill: #a0aec0;
+      font-size: 16px;
+      letter-spacing: 4px;
+    }
+
+    .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 11px;
+      fill: #00f2fe;
+    }
+
+    /* Keyframe Animations */
+    @keyframes pulseGlow {
+      0% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.4));
+      }
+      50% {
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 25px rgba(0, 242, 254, 0.8));
+      }
+      100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.4));
+      }
+    }
+
+    @keyframes rotateRing {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes rotateRingRev {
+      0% { transform: rotate(360deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    @keyframes floatParticle {
+      0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.2; }
+      50% { transform: translateY(-15px) translateX(10px); opacity: 0.8; }
+    }
+
+    @keyframes lineFlow {
+      0% { stroke-dashoffset: 100; }
+      100% { stroke-dashoffset: 0; }
+    }
+
+    @keyframes textShimmer {
+      0% { fill-opacity: 0.8; }
+      50% { fill-opacity: 1; filter: drop-shadow(0 0 2px rgba(255,255,255,0.2)); }
+      100% { fill-opacity: 0.8; }
+    }
+
+    /* Target classes */
+    .animated-logo {
+      transform-origin: 160px 150px;
+      animation: pulseGlow 4s ease-in-out infinite;
+    }
+
+    .ring-outer {
+      transform-origin: 160px 150px;
+      animation: rotateRing 20s linear infinite;
+    }
+
+    .ring-inner {
+      transform-origin: 160px 150px;
+      animation: rotateRingRev 15s linear infinite;
+    }
+
+    .shimmer-text {
+      animation: textShimmer 3s ease-in-out infinite;
+    }
+
+    .particle-1 { animation: floatParticle 6s ease-in-out infinite; transform-origin: center; }
+    .particle-2 { animation: floatParticle 8s ease-in-out infinite 1s; transform-origin: center; }
+    .particle-3 { animation: floatParticle 7s ease-in-out infinite 2s; transform-origin: center; }
+    .particle-4 { animation: floatParticle 9s ease-in-out infinite 0.5s; transform-origin: center; }
+
+    .connecting-line {
+      stroke-dasharray: 8 4;
+      animation: lineFlow 4s linear infinite;
+    }
+  </style>
+
+  <!-- Background Canvas -->
+  <rect width="800" height="300" rx="16" fill="url(#bgGrad)" stroke="#1a263d" stroke-width="2" />
+
+  <!-- Grid Pattern overlay -->
+  <g opacity="0.05">
+    <path d="M 0,30 L 800,30 M 0,60 L 800,60 M 0,90 L 800,90 M 0,120 L 800,120 M 0,150 L 800,150 M 0,180 L 800,180 M 0,210 L 800,210 M 0,240 L 800,240 M 0,270 L 800,270" stroke="#ffffff" stroke-width="1" />
+    <path d="M 50,0 L 50,300 M 100,0 L 100,300 M 150,0 L 150,300 M 200,0 L 200,300 M 250,0 L 250,300 M 300,0 L 300,300 M 350,0 L 350,300 M 400,0 L 400,300 M 450,0 L 450,300 M 500,0 L 500,300 M 550,0 L 550,300 M 600,0 L 600,300 M 650,0 L 650,300 M 700,0 L 700,300 M 750,0 L 750,300" stroke="#ffffff" stroke-width="1" />
+  </g>
+
+  <!-- Ambient Particles -->
+  <circle cx="220" cy="80" r="2" fill="#00f2fe" class="particle-1" />
+  <circle cx="580" cy="60" r="3" fill="#b180ff" class="particle-2" />
+  <circle cx="700" cy="220" r="1.5" fill="#00f2fe" class="particle-3" />
+  <circle cx="450" cy="250" r="2.5" fill="#4facfe" class="particle-4" />
+  <circle cx="100" cy="240" r="2" fill="#b180ff" class="particle-1" />
+  <circle cx="340" cy="50" r="3" fill="#00f2fe" opacity="0.3" />
+  <circle cx="680" cy="90" r="2" fill="#4facfe" opacity="0.4" />
+
+  <!-- Connecting Data Lines (Visualizing digital neural pathway) -->
+  <path d="M 160,150 L 320,80 L 480,80" fill="none" stroke="#00f2fe" stroke-width="1" opacity="0.15" />
+  <path d="M 160,150 L 280,220 L 520,220" fill="none" stroke="#b180ff" stroke-width="1" opacity="0.15" />
+  
+  <path d="M 160,150 L 320,80" fill="none" stroke="#00f2fe" stroke-width="1" class="connecting-line" opacity="0.3" />
+  <path d="M 160,150 L 280,220" fill="none" stroke="#b180ff" stroke-width="1" class="connecting-line" opacity="0.3" />
+
+  <!-- Orbiting Rings & Logo Group -->
+  <g>
+    <!-- Outer orbiting dots -->
+    <g class="ring-outer">
+      <circle cx="160" cy="150" r="95" fill="none" stroke="url(#tealGrad)" stroke-width="1" stroke-dasharray="15 180 30 10" opacity="0.4" />
+      <circle cx="255" cy="150" r="4" fill="#00f2fe" filter="url(#glow)" />
+      <circle cx="65" cy="150" r="2" fill="#4facfe" />
+    </g>
+
+    <!-- Inner orbiting dash pattern -->
+    <g class="ring-inner">
+      <circle cx="160" cy="150" r="75" fill="none" stroke="url(#purpleGrad)" stroke-width="1.5" stroke-dasharray="5 15 20 8" opacity="0.6" />
+      <circle cx="160" cy="75" r="3" fill="#b180ff" filter="url(#glow)" />
+    </g>
+
+    <!-- Main Glowing Center Sphere (Logo container) -->
+    <g class="animated-logo">
+      <!-- Deep shadow/glow -->
+      <circle cx="160" cy="150" r="50" fill="#020813" stroke="#00f2fe" stroke-width="2" filter="url(#heavyGlow)" />
+      
+      <!-- Core Graphic (Graduated gear/atom core) -->
+      <circle cx="160" cy="150" r="38" fill="url(#bgGrad)" stroke="#4facfe" stroke-width="1" />
+      <circle cx="160" cy="150" r="25" fill="url(#tealGrad)" opacity="0.8" filter="url(#glow)" />
+      
+      <!-- Overlaid Letter 'A' or custom emblem symbol -->
+      <path d="M 152,162 L 160,138 L 168,162 M 155,155 L 165,155" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+      <circle cx="160" cy="138" r="1.5" fill="#ffffff" />
+    </g>
+  </g>
+
+  <!-- Typography Content -->
+  <!-- Floating Pill Badge -->
+  <g transform="translate(380, 75)">
+    <rect width="112" height="24" rx="12" fill="#0c1d36" stroke="#1d3d6b" stroke-width="1" />
+    <circle cx="12" cy="12" r="4" fill="#00f2fe" class="shimmer-text">
+      <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite" />
+    </circle>
+    <text x="24" y="16" class="badge">VERSION 2.0</text>
+  </g>
+
+  <text x="380" y="142" class="title shimmer-text">AGAMI OS <tspan fill="#ffffff" font-weight="300">EDUCATION</tspan></text>
+  <text x="380" y="178" class="subtitle">THE FUTURE OF LEARNING, UNLEASHED</text>
+
+  <!-- Feature Tags (Glassmorphic look) -->
+  <g transform="translate(380, 205)">
+    <!-- Tag 1 -->
+    <g transform="translate(0, 0)">
+      <rect width="90" height="22" rx="4" fill="#0c1626" opacity="0.8" stroke="#172e4d" stroke-width="1" />
+      <text x="45" y="14" font-family="'Outfit', sans-serif" font-size="10" font-weight="600" fill="#a0aec0" text-anchor="middle">🎓 STEM READY</text>
+    </g>
+    <!-- Tag 2 -->
+    <g transform="translate(98, 0)">
+      <rect width="98" height="22" rx="4" fill="#0c1626" opacity="0.8" stroke="#172e4d" stroke-width="1" />
+      <text x="49" y="14" font-family="'Outfit', sans-serif" font-size="10" font-weight="600" fill="#a0aec0" text-anchor="middle">🇧🇩 BANGLA IBUS</text>
+    </g>
+    <!-- Tag 3 -->
+    <g transform="translate(204, 0)">
+      <rect width="94" height="22" rx="4" fill="#0c1626" opacity="0.8" stroke="#172e4d" stroke-width="1" />
+      <text x="47" y="14" font-family="'Outfit', sans-serif" font-size="10" font-weight="600" fill="#a0aec0" text-anchor="middle">💾 PERSISTENT</text>
+    </g>
+  </g>
+
+  <!-- Bottom Accent Line -->
+  <rect x="380" y="245" width="370" height="1" fill="url(#tealGrad)" opacity="0.3" />
+</svg>
