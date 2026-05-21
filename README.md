@@ -126,7 +126,36 @@ As we look toward the future of offline and accessible education, we plan to imp
 | **Phase 2** | **🔌 Non-Free Driver Integration** | Out-of-the-box support for Broadcom, Realtek, and Intel Wi-Fi and Bluetooth drivers to ensure flawless performance on older school-provided laptops. | *Q4 2026* |
 | **Phase 3** | **🤝 Agami Welcomer Assistant** | A beautiful, GUI setup wizard (GTK4) greeting students on first boot to easily choose languages, perform audio checks, and test screen readers. | *Q1 2027* |
 | **Phase 4** | **🛡️ Classroom Sandbox & Controls** | Integrated profiles for schools allowing teachers to lock down systems to specific educational sandboxes and monitor student terminals. | *Q2 2027* |
-| **Phase 5** | **🪶 Ultra-Lightweight Spin** | A secondary XFCE or LXQt-based edition specifically optimized for obsolete computers with 1GB to 2GB of RAM. | *Q3 2027* |
+| **Phase 5** | **🍷 Out-of-the-Box Windows Compatibility** | Pre-integrate Bottles / Wine tools to allow students to run Windows educational `.exe` / `.msi` software completely for free. | *Q2 2027* |
+| **Phase 6** | **🪶 Ultra-Lightweight Spin** | A secondary XFCE or LXQt-based edition specifically optimized for obsolete computers with 1GB to 2GB of RAM. | *Q3 2027* |
+
+---
+
+### 🍷 Running Windows Software (Next Version Out-of-the-Box)
+
+In the upcoming version of **Agami OS Education**, users will be able to run Windows educational tools and legacy software (`.exe`/`.msi` files) completely for free out-of-the-box via **Bottles** (a premium, user-friendly graphical runner for Wine).
+
+If you want to use Windows software on the **current** version of Agami OS, you can easily set it up manually by following these three steps:
+
+#### **Step 1: Install Flatpak**
+Open your terminal and run the following command to install the Flatpak package manager:
+```bash
+sudo apt update && sudo apt install -y flatpak
+```
+
+#### **Step 2: Add Flathub Repository**
+Add the Flathub repository to access Bottles and thousands of other Linux & Windows-compatible apps:
+```bash
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+```
+
+#### **Step 3: Install Bottles**
+Finally, execute the following command to download and install Bottles:
+```bash
+flatpak install -y flathub com.usebottles.bottles
+```
+
+Once completed, search for **Bottles** in your GNOME application overview, open it, create a new gaming or software "Bottle" environment, and immediately run your Windows executables!
 
 ---
 
