@@ -1,0 +1,33 @@
+# Agami OS Education Build Workspace Git Ignore
+
+# Large OS files
+*.iso
+base.iso
+Agami_OS_Education.iso
+
+# Extracted build directories (contains GBs of files)
+iso_extracted/
+squashfs_extracted/
+
+# Dynamic tools and compiled binaries
+tools/
+*.zip
+*.tar.gz
+*.tar.xz
+*.exe
+*.dll
+
+# Python caches and metadata
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+venv/
+
+# Build logs and temporary files
+*.log
+build_output/
+temp/
+tmp/
