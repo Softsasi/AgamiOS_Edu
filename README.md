@@ -4,7 +4,7 @@
 [![Desktop](https://img.shields.io/badge/Desktop-GNOME-purple?logo=gnome)](https://www.gnome.org/)
 [![Platform](https://img.shields.io/badge/Build%20Platform-Windows-0078D4?logo=windows)](https://microsoft.com/)
 
-**Agami OS Education** is a premium, customized educational operating system built on top of **Debian 13 (Trixie)** stable release featuring the sleek and modern **GNOME desktop environment**. Designed specifically for students and educators, it integrates tailored learning tools, custom branding, and a beautiful offline learning portal.
+**Agami OS Education** is a premium, customized educational operating system built by **[Softsasi](https://www.softsasi.com)** on top of **Debian 13 (Trixie)** stable release featuring the sleek and modern **GNOME desktop environment**. Designed specifically for students and educators, it integrates tailored learning tools, custom branding, and a beautiful offline learning portal.
 
 This repository hosts the **Windows-native build system** that automates the downloading, deconstructing, customizing, and repacking of the Debian Live ISO directly on standard Windows environments without requiring WSL or Docker.
 
@@ -86,4 +86,4 @@ To build the custom operating system image:
 
 ---
 
-*Agami OS Education is an open-source initiative designed to bring beautiful, robust, and accessible educational environments to students globally.*
+*Agami OS Education is developed and built by [Softsasi](https://www.softsasi.com), an open-source initiative designed to bring beautiful, robust, and accessible educational environments to students globally.*
