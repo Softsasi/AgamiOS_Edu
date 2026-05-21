@@ -175,7 +175,9 @@ def main():
         "usr/share/backgrounds/agami_wallpaper.png",
         "usr/share/pixmaps/agami-logo.png",
         "etc/skel/Desktop/agami-hub.desktop",
+        "etc/skel/Desktop/agami-install-software.desktop",
         "usr/local/bin/agami-init.sh",
+        "usr/local/bin/agami-install-software.sh",
         "etc/xdg/autostart/agami-init.desktop",
     }
 
@@ -191,6 +193,18 @@ Terminal=false
 Categories=Education;Development;
 """
 
+    # Educational Software Installer Launcher Content
+    installer_launcher_content = """[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Install Educational Software
+Comment=Install LibreOffice, Brave, programming IDEs, and STEM simulators
+Exec=bash -c "sudo /usr/local/bin/agami-install-software.sh; echo; echo 'Press Enter to close...'; read"
+Icon=system-software-install
+Terminal=true
+Categories=System;Setup;
+"""
+
     # Init Script Content
     init_script_content = """#!/bin/bash
 # Wait for D-Bus and GSettings services to initialize
@@ -204,9 +218,76 @@ gsettings set org.gnome.desktop.background picture-options "zoom"
 # Set Screensaver Background
 gsettings set org.gnome.desktop.screensaver picture-uri "file:///usr/share/backgrounds/agami_wallpaper.png"
 
-# Ensure the Desktop Launcher is executable
+# Ensure desktop shortcuts are executable
 chmod +x /home/user/Desktop/agami-hub.desktop 2>/dev/null
+chmod +x /home/user/Desktop/agami-install-software.desktop 2>/dev/null
 chmod +x /etc/skel/Desktop/agami-hub.desktop 2>/dev/null
+chmod +x /etc/skel/Desktop/agami-install-software.desktop 2>/dev/null
+"""
+
+    # Post-Install Software Setup Script Content
+    installer_script_content = """#!/bin/bash
+set -e
+
+# Visual formatting
+GREEN='\\033[0;32m'
+TEAL='\\033[0;36m'
+YELLOW='\\033[1;33m'
+RED='\\033[0;31m'
+NC='\\033[0m' # No Color
+
+echo -e "${TEAL}=========================================================================="
+echo -e "          Agami OS Education - Software Installation Suite                "
+echo -e "                     Built by Softsasi (www.softsasi.com)                 "
+echo -e "==========================================================================${NC}\\n"
+
+# Verify we are running as root
+if [ "$EUID" -ne 0 ]; then
+  echo -e "${RED}Error: Please run this script with sudo or as root!${NC}"
+  echo "Example: sudo $0"
+  exit 1
+fi
+
+echo -e "${YELLOW}Step 1/8: Updating and Upgrading System Repositories...${NC}"
+apt update && apt upgrade -y
+
+echo -e "\\n${YELLOW}Step 2/8: Installing LibreOffice & PDF/eBook Viewers...${NC}"
+apt install -y libreoffice libreoffice-l10n-en-us libreoffice-help-en-us evince calibre xournalpp
+
+echo -e "\\n${YELLOW}Step 3/8: Setting up Brave Secure Web Browser...${NC}"
+apt install -y curl apt-transport-https
+curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main" | tee /etc/apt/sources.list.d/brave-browser-release.list
+apt update && apt install -y brave-browser
+
+echo -e "\\n${YELLOW}Step 4/8: Installing Kid-Friendly Educational Tools...${NC}"
+apt install -y gcompris-qt tuxmath tuxtype tuxpaint tuxpaint-stamps-default
+
+echo -e "\\n${YELLOW}Step 5/8: Installing STEM, Geography & Astronomy Simulators...${NC}"
+apt install -y kalzium marble kstars kanagram kwordquiz stellarium wxmaxima step avogadro gnuplot geogebra
+
+echo -e "\\n${YELLOW}Step 6/8: Installing Programming IDEs & Learning Environments...${NC}"
+apt install -y scratch thonny geany arduino bluej
+
+echo -e "\\n${YELLOW}Step 7/8: Installing High-End Multimedia & Creative suites...${NC}"
+apt install -y gimp inkscape krita kdenlive audacity musescore3
+
+echo -e "\\n${YELLOW}Step 8/8: Installing System utilities, Security & Accessibility...${NC}"
+apt install -y flatpak timeshift orca onboard redshift redshift-gtk synaptic keepassxc clamav clamav-daemon clamtk ufw
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+ufw enable || true
+
+# Debian Edu meta-packages
+echo -e "\\n${YELLOW}Optional: Installing Debian Edu project packages...${NC}"
+apt install -y education-mathematics education-science education-language education-geography education-misc
+
+echo -e "\\n${YELLOW}Cleaning up package cache...${NC}"
+apt autoremove -y && apt clean
+
+echo -e "\\n${GREEN}=========================================================================="
+echo -e "🎉 SUCCESS! All educational software packages have been installed!"
+echo -e "You can now find them in your GNOME Applications Menu!"
+echo -e "==========================================================================${NC}"
 """
 
     # Autostart Entry Content
@@ -262,7 +343,7 @@ NoDisplay=true
         with open(logo_path, 'rb') as f:
             tar_out.addfile(info, f)
 
-        # 3. Desktop Shortcut
+        # 3. Desktop Hub Shortcut
         shortcut_data = launcher_content.encode('utf-8')
         info = tarfile.TarInfo(name="etc/skel/Desktop/agami-hub.desktop")
         info.size = len(shortcut_data)
@@ -273,7 +354,18 @@ NoDisplay=true
         info.gname = "root"
         tar_out.addfile(info, io.BytesIO(shortcut_data))
 
-        # 4. Init Script
+        # 4. Desktop Installer Shortcut
+        installer_launcher_data = installer_launcher_content.encode('utf-8')
+        info = tarfile.TarInfo(name="etc/skel/Desktop/agami-install-software.desktop")
+        info.size = len(installer_launcher_data)
+        info.mode = 0o755
+        info.uid = 0
+        info.gid = 0
+        info.uname = "root"
+        info.gname = "root"
+        tar_out.addfile(info, io.BytesIO(installer_launcher_data))
+
+        # 5. Init Script
         init_data = init_script_content.encode('utf-8')
         info = tarfile.TarInfo(name="usr/local/bin/agami-init.sh")
         info.size = len(init_data)
@@ -284,7 +376,18 @@ NoDisplay=true
         info.gname = "root"
         tar_out.addfile(info, io.BytesIO(init_data))
 
-        # 5. Autostart Desktop Entry
+        # 6. Post-Install Software Setup Script
+        installer_script_data = installer_script_content.encode('utf-8')
+        info = tarfile.TarInfo(name="usr/local/bin/agami-install-software.sh")
+        info.size = len(installer_script_data)
+        info.mode = 0o755
+        info.uid = 0
+        info.gid = 0
+        info.uname = "root"
+        info.gname = "root"
+        tar_out.addfile(info, io.BytesIO(installer_script_data))
+
+        # 7. Autostart Desktop Entry
         autostart_data = autostart_content.encode('utf-8')
         info = tarfile.TarInfo(name="etc/xdg/autostart/agami-init.desktop")
         info.size = len(autostart_data)
@@ -295,7 +398,7 @@ NoDisplay=true
         info.gname = "root"
         tar_out.addfile(info, io.BytesIO(autostart_data))
 
-        # 6. Agami Education Hub HTML files
+        # 8. Agami Education Hub HTML files
         for root, dirs, files in os.walk(hub_src_dir):
             for file in files:
                 full_path = os.path.join(root, file)
@@ -314,7 +417,7 @@ NoDisplay=true
                     
     # Clean up unmodified input tar file
     os.remove(tar_file)
-    print(f"Branding and portal successfully injected in {time.time() - start_time:.2f} seconds.\n")
+    print(f"Branding, installer, and portal successfully injected in {time.time() - start_time:.2f} seconds.\n")
 
     # 7. Repack filesystem using tar2sqfs
     print("--- [Step 7/9] Repacking customized root filesystem (SquashFS) ---")
@@ -327,12 +430,12 @@ NoDisplay=true
     
     # Detect CPU jobs
     cpu_count = os.cpu_count() or 4
-    print(f"Compressing with {cpu_count} threads using xz...")
+    print(f"Compressing with {cpu_count} threads using xz (optimized level 3)...")
     
     start_time = time.time()
     with open(custom_tar_file, 'rb') as infile:
         subprocess.run(
-            [tar2sqfs_bin, "--compressor", "xz", "-j", str(cpu_count), "--force", squashfs_file],
+            [tar2sqfs_bin, "--compressor", "xz", "-X", "level=3", "-j", str(cpu_count), "--force", squashfs_file],
             stdin=infile,
             check=True
         )
@@ -393,7 +496,7 @@ NoDisplay=true
     subprocess.run(xorriso_args, cwd=BASE_DIR, check=True)
     
     print("\n==========================================================================")
-    print("🎉 SUCCESS! Agami OS Education has been built successfully!")
+    print("SUCCESS! Agami OS Education has been built successfully!")
     print(f"Output File: {OUTPUT_ISO_PATH}")
     print(f"Total Time Taken: {(time.time() - global_start_time)/60:.2f} minutes")
     print("==========================================================================\n")
