@@ -4,8 +4,13 @@
 
 [![Base](https://img.shields.io/badge/Base-Debian%2013%20%28Trixie%29-blue?style=for-the-badge&logo=debian&logoColor=white)](https://www.debian.org/)
 [![Desktop](https://img.shields.io/badge/Desktop-GNOME%2045-purple?style=for-the-badge&logo=gnome&logoColor=white)](https://www.gnome.org/)
-[![Platform](https://img.shields.io/badge/Build%20Platform-Windows-0078D4?style=for-the-badge&logo=windows&logoColor=white)](https://microsoft.com/)
-[![License](https://img.shields.io/badge/License-GPL%20v3-green?style=for-the-badge)](https://gnu.org/licenses/gpl.html)
+[![Platform](https://img.shields.io/badge/Build%20Platform-Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)](https://www.linux.org/)
+[![License](https://img.shields.io/badge/License-GPL%20v3-green?style=for-the-badge)](file:///C:/Users/softs/Documents/Agami_OS_Education/LICENSE)
+
+<br/>
+
+🌐 **Official Website:** [agami.softsasi.com](https://agami.softsasi.com)  
+💾 **ISO Download Link:** [Download Agami OS Education](https://agami.softsasi.com/os/Agami_OS_Education.iso)
 
 </div>
 
@@ -15,7 +20,7 @@
 
 It wraps cutting-edge offline learning software, interactive educational suites, and instant language tools in an elegant, glassmorphic visual wrapper that makes technology intuitive and engaging for learners worldwide.
 
-This repository hosts our custom **Windows-native build orchestration system** that extracts, customizes, and repacks bootable hybrid ISOs directly in standard Windows command line environments without demanding WSL, Hyper-V, or Docker.
+This repository hosts our custom **build orchestration system** designed to deconstruct, customize, and repack bootable hybrid ISOs. The build system supports a native Linux terminal pipeline as well as an automated Windows command-line orchestrator that operates without requiring WSL, Hyper-V, or Docker.
 
 ---
 
@@ -161,24 +166,104 @@ Once completed, search for **Bottles** in your GNOME application overview, open 
 
 ## 📋 Build Prerequisites
 
-To compile the ISO locally from your Windows machine:
-* **Operating System**: Windows 10 or 11 (64-bit).
-* **Python**: Version 3.10 or higher.
-* **7-Zip**: Installed at `C:\Program Files\7-Zip\` (used for ultra-fast deconstruction).
-* **Workspace Assets**: Make sure `logo.png`, `wallpaper.png`, and `boot_splash.png` are in the project root.
+### Windows Build Requirements
+*   **Operating System**: Windows 10 or 11 (64-bit).
+*   **Python**: Version 3.10 or higher.
+*   **7-Zip**: Installed at `C:\Program Files\7-Zip\` (used for ultra-fast deconstruction).
+*   **Workspace Assets**: Ensure `logo.png`, `wallpaper.png`, and `boot_splash.png` are in the project root.
+
+### Linux Build Requirements
+To compile the custom ISO directly on standard Linux distributions (Debian, Ubuntu, Linux Mint, etc.):
+*   **Operating System**: Debian 12 (Bookworm)+, Ubuntu 22.04 LTS+, or derivatives.
+*   **Packages**: `squashfs-tools`, `xorriso`, `p7zip-full`, and `python3`.
+*   **Installation Command**:
+    ```bash
+    sudo apt update && sudo apt install -y squashfs-tools xorriso p7zip-full python3
+    ```
 
 ---
 
-## ⚙️ Developer Guide: Compile Now
+## ⚙️ Developer Guide: Compiling Agami OS
 
-1. Place your configuration assets in the repository root.
-2. Launch terminal or PowerShell in the project directory.
-3. Trigger the Python builder:
+### Option A: Automated Build on Windows
+1. Make sure `logo.png`, `wallpaper.png`, and `boot_splash.png` are in the root directory.
+2. Open cmd or PowerShell in the project folder and run:
    ```powershell
    python build_agami.py
    ```
-4. The script will automatically assemble all folders and output `Agami_OS_Education.iso` directly in the project directory.
+3. The script will set up the binary toolchain automatically and output `Agami_OS_Education.iso` in the root folder.
+
+### Option B: Native Linux Build Pipeline (Linux-Native Shell)
+If you are developing inside a Linux terminal environment, you can run these commands step-by-step to customize the image without running any Windows script:
+
+1. **Extract Base ISO File**:
+   ```bash
+   7z x base.iso -oextracted_iso/
+   ```
+2. **Decompress Linux SquashFS Root Filesystem**:
+   ```bash
+   unsquashfs -d rootfs/ extracted_iso/live/filesystem.squashfs
+   ```
+3. **Inject Portals & System Overrides**:
+   ```bash
+   # Copy offline educational hub portal
+   mkdir -p rootfs/usr/share/agami-hub/
+   cp -r agami_hub/* rootfs/usr/share/agami-hub/
+   
+   # Copy wallpapers, launchers, and autostart init configs
+   cp wallpaper.png rootfs/usr/share/backgrounds/agami_wallpaper.png
+   cp logo.png rootfs/usr/share/pixmaps/agami-logo.png
+   
+   # Setup autostart configuration for live desktop
+   cp build_files/agami-init.sh rootfs/usr/local/bin/agami-init.sh
+   chmod +x rootfs/usr/local/bin/agami-init.sh
+   cp build_files/agami-init.desktop rootfs/etc/xdg/autostart/agami-init.desktop
+   
+   # Setup desktop application launchers
+   mkdir -p rootfs/etc/skel/Desktop/
+   cp "build_files/Agami Education Hub.desktop" rootfs/etc/skel/Desktop/agami-hub.desktop
+   cp "build_files/agami-install-software.desktop" rootfs/etc/skel/Desktop/agami-install-software.desktop
+   cp "build_files/agami-install-software.sh" rootfs/usr/local/bin/agami-install-software.sh
+   chmod +x rootfs/usr/local/bin/agami-install-software.sh
+   
+   # Override boot splash screens
+   cp boot_splash.png extracted_iso/boot/grub/splash.png
+   cp boot_splash.png extracted_iso/isolinux/splash.png
+   ```
+4. **Recompress SquashFS with High-Ratio XZ Compression**:
+   ```bash
+   rm extracted_iso/live/filesystem.squashfs
+   mksquashfs rootfs/ extracted_iso/live/filesystem.squashfs -comp xz -b 1M
+   ```
+5. **Master UEFI & Legacy Hybrid Bootable ISO**:
+   ```bash
+   xorriso -as mkisofs \
+     -iso-level 3 \
+     -o Agami_OS_Education.iso \
+     -full-iso9660-filenames \
+     -volid "DEBIAN_LIVE" \
+     -eltorito-boot isolinux/isolinux.bin \
+     -eltorito-catalog isolinux/boot.cat \
+     -no-emul-boot -boot-load-size 4 -boot-info-table \
+     -isohybrid-mbr extracted_iso/isolinux/isohdpfx.bin \
+     -eltorito-alt-boot \
+     -e boot/grub/efi.img \
+     -no-emul-boot -isohybrid-gpt-basdat \
+     extracted_iso/
+   ```
 
 ---
+
+## 👥 Core Development Team
+
+**Agami OS Education** is proudly engineered, researched, and coordinated by:
+
+*   **Shakil Anower Samrat** — *Chief Executive Officer*
+*   **Izaz Uddin Mahmud** — *Researcher*
+*   **Sumaiya Fatima Nahin** — *Project Manager*
+*   **Lian Mollick** — *Embedded Engineer and UX Designer*
+
+---
+
 **Agami OS Education** is developed and supported by **Softsasi** ([www.softsasi.com](https://www.softsasi.com)). 
 For educational sponsorships, school rollouts, or technical support, reach out to us at [support@agami.softsasi.com](mailto:support@agami.softsasi.com).
