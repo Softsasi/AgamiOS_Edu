@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agami Education Hub</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="glass-bg"></div>
+    
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="brand">
+            <img src="../logo.png" alt="Agami Logo" class="brand-logo">
+            <span class="brand-name">Agami OS</span>
+        </div>
+        <ul class="nav-links">
+            <li class="active" data-target="dashboard"><i class="fa-solid fa-gauge-high"></i> Dashboard</li>
+            <li data-target="calculator"><i class="fa-solid fa-calculator"></i> Math Lab</li>
+            <li data-target="playground"><i class="fa-solid fa-code"></i> Code Arena</li>
+            <li data-target="quiz"><i class="fa-solid fa-graduation-cap"></i> Quiz Master</li>
+            <li data-target="timer"><i class="fa-solid fa-clock"></i> Focus Zone</li>
+            <li data-target="library"><i class="fa-solid fa-book"></i> Library</li>
+        </ul>
+        <div class="sidebar-footer">
+            <p>Agami OS Education</p>
+            <span class="version">v1.0.0 (Trixie)</span>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="welcome-text">
+                <h1 id="greeting">Hello, Student!</h1>
+                <p>Welcome to your learning ecosystem. What are we studying today?</p>
+            </div>
+            <div class="date-time" id="realtime-clock">
+                <i class="fa-regular fa-clock"></i> <span id="time-str">12:00:00 PM</span>
+            </div>
+        </header>
+
+        <!-- Dashboard Panel -->
+        <section id="dashboard" class="panel active">
+            <div class="dashboard-grid">
+                <div class="card hero-card">
+                    <h2>Empower Your Mind</h2>
+                    <p>Agami OS provides a distraction-free, open-source environment tailormade for modern academic achievement and software development exploration.</p>
+                    <button class="btn btn-primary" onclick="switchPanel('playground')">Start Coding <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+                <div class="card stats-card">
+                    <h3>Focus Stats</h3>
+                    <div class="pomodoro-mini">
+                        <div class="stat-circle">
+                            <span id="mini-timer">25:00</span>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-title">Study Session</p>
+                            <span class="stat-sub">Stay productive & focused</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="section-title">Explore Modules</h3>
+            <div class="modules-grid">
+                <div class="module-card" onclick="switchPanel('calculator')">
+                    <div class="module-icon"><i class="fa-solid fa-calculator"></i></div>
+                    <h4>Math Lab</h4>
+                    <p>Scientific calculator, graphing solver, and formula references.</p>
+                </div>
+                <div class="module-card" onclick="switchPanel('playground')">
+                    <div class="module-icon"><i class="fa-solid fa-code"></i></div>
+                    <h4>Code Arena</h4>
+                    <p>Write, compile, and run HTML, CSS, and JS in a live playground.</p>
+                </div>
+                <div class="module-card" onclick="switchPanel('quiz')">
+                    <div class="module-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <h4>Quiz Master</h4>
+                    <p>Test your logic with custom questions on Mathematics & Coding.</p>
+                </div>
+                <div class="module-card" onclick="switchPanel('timer')">
+                    <div class="module-icon"><i class="fa-solid fa-clock"></i></div>
+                    <h4>Focus Zone</h4>
+                    <p>Customizable Pomodoro timer to maximize your learning efficiency.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Calculator Panel -->
+        <section id="calculator" class="panel">
+            <div class="panel-layout">
+                <div class="card calc-container">
+                    <div class="calc-screen">
+                        <div class="calc-history" id="calc-history"></div>
+                        <input type="text" class="calc-display" id="calc-display" readonly value="0">
+                    </div>
+                    <div class="calc-buttons">
+                        <button class="btn-calc btn-op" onclick="clearCalc()">C</button>
+                        <button class="btn-calc btn-op" onclick="backspaceCalc()"><i class="fa-solid fa-backspace"></i></button>
+                        <button class="btn-calc btn-op" onclick="pressCalc('(')">(</button>
+                        <button class="btn-calc btn-op" onclick="pressCalc(')')">)</button>
+
+                        <button class="btn-calc btn-fn" onclick="pressCalc('Math.sin(')">sin</button>
+                        <button class="btn-calc btn-fn" onclick="pressCalc('Math.cos(')">cos</button>
+                        <button class="btn-calc btn-fn" onclick="pressCalc('Math.tan(')">tan</button>
+                        <button class="btn-calc btn-op" onclick="pressCalc('/')">/</button>
+
+                        <button class="btn-calc" onclick="pressCalc('7')">7</button>
+                        <button class="btn-calc" onclick="pressCalc('8')">8</button>
+                        <button class="btn-calc" onclick="pressCalc('9')">9</button>
+                        <button class="btn-calc btn-op" onclick="pressCalc('*')">&times;</button>
+
+                        <button class="btn-calc" onclick="pressCalc('4')">4</button>
+                        <button class="btn-calc" onclick="pressCalc('5')">5</button>
+                        <button class="btn-calc" onclick="pressCalc('6')">6</button>
+                        <button class="btn-calc btn-op" onclick="pressCalc('-')">-</button>
+
+                        <button class="btn-calc" onclick="pressCalc('1')">1</button>
+                        <button class="btn-calc" onclick="pressCalc('2')">2</button>
+                        <button class="btn-calc" onclick="pressCalc('3')">3</button>
+                        <button class="btn-calc btn-op" onclick="pressCalc('+')">+</button>
+
+                        <button class="btn-calc" onclick="pressCalc('0')">0</button>
+                        <button class="btn-calc" onclick="pressCalc('.')">.</button>
+                        <button class="btn-calc btn-fn" onclick="pressCalc('Math.sqrt(')">&radic;</button>
+                        <button class="btn-calc btn-eq" onclick="solveCalc()">=</button>
+                    </div>
+                </div>
+
+                <div class="card ref-card">
+                    <h3>Quick References</h3>
+                    <div class="accordion">
+                        <div class="acc-item">
+                            <div class="acc-header">Algebra Formulae <i class="fa-solid fa-chevron-down"></i></div>
+                            <div class="acc-body">
+                                <ul>
+                                    <li>Quadratic: <code>x = (-b ± √(b² - 4ac)) / 2a</code></li>
+                                    <li>Binomial: <code>(a + b)² = a² + 2ab + b²</code></li>
+                                    <li>Difference: <code>a² - b² = (a - b)(a + b)</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="acc-item">
+                            <div class="acc-header">Trigonometric Identities <i class="fa-solid fa-chevron-down"></i></div>
+                            <div class="acc-body">
+                                <ul>
+                                    <li>Pythagorean: <code>sin²(x) + cos²(x) = 1</code></li>
+                                    <li>Double Angle: <code>sin(2x) = 2sin(x)cos(x)</code></li>
+                                    <li>Tangents: <code>tan(x) = sin(x)/cos(x)</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Playground Panel -->
+        <section id="playground" class="panel">
+            <div class="playground-layout">
+                <div class="editor-pane">
+                    <div class="pane-header">
+                        <span><i class="fa-solid fa-code"></i> HTML / CSS / JS Editor</span>
+                        <button class="btn btn-small btn-primary" onclick="runPlayground()"><i class="fa-solid fa-play"></i> Run</button>
+                    </div>
+                    <textarea class="editor-area" id="code-editor" spellcheck="false" placeholder="Write code here..."><h3>Hello World from Agami OS</h3>
+<p>This is a live playground. Try changing styles in the box below!</p>
+
+<div class="box">Agami OS</div>
+
+<style>
+.box {
+  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+  color: white;
+  padding: 30px;
+  border-radius: 12px;
+  display: inline-block;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  box-shadow: 0 10px 20px rgba(0,242,254,0.3);
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+</style></textarea>
+                </div>
+                <div class="preview-pane">
+                    <div class="pane-header">
+                        <span><i class="fa-solid fa-desktop"></i> Live Output</span>
+                    </div>
+                    <iframe class="preview-frame" id="preview-frame" sandbox="allow-scripts"></iframe>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Master Panel -->
+        <section id="quiz" class="panel">
+            <div class="card quiz-card">
+                <div id="quiz-start-view">
+                    <h2>Test Your Knowledge</h2>
+                    <p>Challenge yourself with quizzes in computer science, math, and general logic designed to enhance critical reasoning capabilities.</p>
+                    <button class="btn btn-primary" onclick="startQuiz()">Begin Quiz <i class="fa-solid fa-play"></i></button>
+                </div>
+                <div id="quiz-question-view" style="display: none;">
+                    <div class="quiz-header">
+                        <span id="quiz-progress">Question 1 of 5</span>
+                        <span id="quiz-score">Score: 0</span>
+                    </div>
+                    <div class="quiz-body">
+                        <h3 id="quiz-question">Question text here?</h3>
+                        <div class="quiz-options" id="quiz-options">
+                            <!-- JS will inject options here -->
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="next-q-btn" onclick="nextQuestion()" style="display: none;">Next <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+                <div id="quiz-results-view" style="display: none;">
+                    <h2>Quiz Completed!</h2>
+                    <p class="final-score">Your Final Score: <span id="quiz-final-score">0</span>/500</p>
+                    <p id="quiz-performance-comment">Excellent work!</p>
+                    <button class="btn btn-primary" onclick="restartQuiz()">Try Again <i class="fa-solid fa-undo"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Focus Zone Panel -->
+        <section id="timer" class="panel">
+            <div class="card timer-card">
+                <div class="timer-display" id="timer-display">25:00</div>
+                <div class="timer-mode" id="timer-mode">POMODORO</div>
+                <div class="timer-controls">
+                    <button class="btn btn-secondary" onclick="resetTimer()"><i class="fa-solid fa-undo"></i> Reset</button>
+                    <button class="btn btn-primary btn-large" id="play-pause-btn" onclick="toggleTimer()"><i class="fa-solid fa-play"></i> Start</button>
+                    <button class="btn btn-secondary" onclick="skipTimer()"><i class="fa-solid fa-forward"></i> Skip</button>
+                </div>
+                <div class="timer-settings">
+                    <button class="btn btn-small" onclick="setTimerPreset(25, 'POMODORO')">Pomodoro</button>
+                    <button class="btn btn-small" onclick="setTimerPreset(5, 'SHORT BREAK')">Short Break</button>
+                    <button class="btn btn-small" onclick="setTimerPreset(15, 'LONG BREAK')">Long Break</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Library Panel -->
+        <section id="library" class="panel">
+            <div class="library-layout">
+                <div class="card book-card">
+                    <div class="book-icon"><i class="fa-solid fa-book-open"></i></div>
+                    <h3>Operating Systems Handbook</h3>
+                    <p>Learn the structural principles of kernels, process management, filesystems, and shells.</p>
+                    <button class="btn btn-secondary" onclick="viewBook('os')">Open Book</button>
+                </div>
+                <div class="card book-card">
+                    <div class="book-icon"><i class="fa-solid fa-square-root-variable"></i></div>
+                    <h3>Calculus and Analytical Geometry</h3>
+                    <p>Deep dive into limits, derivatives, integrals, infinite series, and vector algebra basics.</p>
+                    <button class="btn btn-secondary" onclick="viewBook('calc')">Open Book</button>
+                </div>
+                <div class="card book-card">
+                    <div class="book-icon"><i class="fa-solid fa-terminal"></i></div>
+                    <h3>Computer Architecture & Shells</h3>
+                    <p>Introduction to registers, CPU instruction sets, caching architectures, and POSIX scripting.</p>
+                    <button class="btn btn-secondary" onclick="viewBook('arch')">Open Book</button>
+                </div>
+            </div>
+            <!-- Book Viewer Modal -->
+            <div id="book-viewer" class="book-viewer-modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="book-title">Book Title</h3>
+                        <button class="btn-close" onclick="closeBookViewer()">&times;</button>
+                    </div>
+                    <div class="modal-body" id="book-body">
+                        <!-- Book chapters here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
