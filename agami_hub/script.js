@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCalculator();
     initAccordion();
     runPlayground(); // Initial preview loading
+    initPracticeArea(); // Initialize phonetic practice workspace
 });
 
 // ==========================================================================
@@ -466,4 +467,34 @@ function viewBook(bookKey) {
 
 function closeBookViewer() {
     document.getElementById('book-viewer').style.display = 'none';
+}
+
+// ==========================================================================
+// Interactive Bangla Practice & App Simulation Launcher
+// ==========================================================================
+
+function initPracticeArea() {
+    const area = document.getElementById('language-practice-area');
+    const counter = document.getElementById('char-counter');
+    if (area && counter) {
+        area.addEventListener('input', () => {
+            const count = area.value.length;
+            counter.innerText = `${count} character${count === 1 ? '' : 's'}`;
+        });
+    }
+}
+
+function clearPractice() {
+    const area = document.getElementById('language-practice-area');
+    const counter = document.getElementById('char-counter');
+    if (area) {
+        area.value = '';
+    }
+    if (counter) {
+        counter.innerText = '0 characters';
+    }
+}
+
+function launchApp(appName) {
+    alert(`[Agami OS Live Environment] Launching ${appName} from /usr/bin/${appName}...\\nThis application is preloaded inside the ISO and fully available offline.`);
 }

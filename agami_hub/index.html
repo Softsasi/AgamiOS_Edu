@@ -18,7 +18,7 @@
     <!-- Sidebar Navigation -->
     <nav class="sidebar">
         <div class="brand">
-            <img src="../logo.png" alt="Agami Logo" class="brand-logo">
+            <img src="logo.png" alt="Agami Logo" class="brand-logo" onerror="this.src='../logo.png'">
             <span class="brand-name">Agami OS</span>
         </div>
         <ul class="nav-links">
@@ -27,11 +27,13 @@
             <li data-target="playground"><i class="fa-solid fa-code"></i> Code Arena</li>
             <li data-target="quiz"><i class="fa-solid fa-graduation-cap"></i> Quiz Master</li>
             <li data-target="timer"><i class="fa-solid fa-clock"></i> Focus Zone</li>
-            <li data-target="library"><i class="fa-solid fa-book"></i> Library</li>
+            <li data-target="library"><i class="fa-solid fa-book-open"></i> Library & Simulators</li>
+            <li data-target="language"><i class="fa-solid fa-language"></i> Bangla Typing</li>
+            <li data-target="persistence"><i class="fa-solid fa-floppy-disk"></i> USB Persistence</li>
         </ul>
         <div class="sidebar-footer">
             <p>Agami OS Education</p>
-            <span class="version">v1.0.0 (Trixie)</span>
+            <span class="version">v2.0.0 (Trixie)</span>
             <div class="credits" style="font-size: 0.75rem; opacity: 0.7; margin-top: 5px;">
                 Built by <a href="https://www.softsasi.com" target="_blank" style="color: #00f2fe; text-decoration: underline;">Softsasi</a>
             </div>
@@ -75,25 +77,25 @@
 
             <h3 class="section-title">Explore Modules</h3>
             <div class="modules-grid">
-                <div class="module-card" onclick="switchPanel('calculator')">
-                    <div class="module-icon"><i class="fa-solid fa-calculator"></i></div>
-                    <h4>Math Lab</h4>
-                    <p>Scientific calculator, graphing solver, and formula references.</p>
+                <div class="module-card" onclick="switchPanel('library')">
+                    <div class="module-icon"><i class="fa-solid fa-book-open"></i></div>
+                    <h4>Offline Library</h4>
+                    <p>Kiwix offline Wikipedia reader, STEM simulators, and educational handbooks.</p>
+                </div>
+                <div class="module-card" onclick="switchPanel('language')">
+                    <div class="module-icon"><i class="fa-solid fa-language"></i></div>
+                    <h4>Bangla Typing</h4>
+                    <p>Learn dynamic Bengali phonetic typing. Easily type Bangla with standard hotkeys.</p>
                 </div>
                 <div class="module-card" onclick="switchPanel('playground')">
                     <div class="module-icon"><i class="fa-solid fa-code"></i></div>
                     <h4>Code Arena</h4>
                     <p>Write, compile, and run HTML, CSS, and JS in a live playground.</p>
                 </div>
-                <div class="module-card" onclick="switchPanel('quiz')">
-                    <div class="module-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-                    <h4>Quiz Master</h4>
-                    <p>Test your logic with custom questions on Mathematics & Coding.</p>
-                </div>
-                <div class="module-card" onclick="switchPanel('timer')">
-                    <div class="module-icon"><i class="fa-solid fa-clock"></i></div>
-                    <h4>Focus Zone</h4>
-                    <p>Customizable Pomodoro timer to maximize your learning efficiency.</p>
+                <div class="module-card" onclick="switchPanel('persistence')">
+                    <div class="module-icon"><i class="fa-solid fa-floppy-disk"></i></div>
+                    <h4>USB Persistence</h4>
+                    <p>Setup visual guidelines for Rufus and Ventoy persistence config.</p>
                 </div>
             </div>
         </section>
@@ -257,28 +259,67 @@
             </div>
         </section>
 
-        <!-- Library Panel -->
+        <!-- Library Panel (Upgraded with Offline OERs and Simulators) -->
         <section id="library" class="panel">
+            <h2 class="panel-section-title"><i class="fa-solid fa-book-open"></i> Offline Library & Simulators</h2>
+            <p class="panel-section-subtitle">Deep educational materials, interactive science labs, and offline knowledge bases loaded for zero-connectivity access.</p>
+            
             <div class="library-layout">
+                <!-- Kiwix Card -->
+                <div class="card book-card oer-card">
+                    <div class="book-icon"><i class="fa-solid fa-globe"></i></div>
+                    <h3>Kiwix Offline Wikipedia</h3>
+                    <span class="badge badge-accent">Offline Web</span>
+                    <p>Read a comprehensive offline copy of Wikipedia and Wiktionary without an internet connection. Extremely fast local database query search.</p>
+                    <button class="btn btn-primary" onclick="launchApp('kiwix-desktop')">Open Kiwix</button>
+                </div>
+
+                <!-- PhET Card -->
+                <div class="card book-card oer-card">
+                    <div class="book-icon"><i class="fa-solid fa-flask"></i></div>
+                    <h3>PhET STEM Simulators</h3>
+                    <span class="badge badge-primary">Interactive Labs</span>
+                    <p>Run physics, math, chemistry, and biology interactive game-based simulations. Explore structural molecular bonds, force fields, and fractions.</p>
+                    <a href="https://phet.colorado.edu/" target="_blank" class="btn btn-secondary">Explore PhET Labs</a>
+                </div>
+
+                <!-- GCompris Card -->
+                <div class="card book-card oer-card">
+                    <div class="book-icon"><i class="fa-solid fa-child"></i></div>
+                    <h3>GCompris Educational Suite</h3>
+                    <span class="badge badge-secondary">K-8 Curriculum</span>
+                    <p>An interactive high-quality suite loaded with over 100 activities for learning arithmetic, vocabulary, typing, and logic reasoning games.</p>
+                    <button class="btn btn-primary" onclick="launchApp('gcompris-qt')">Launch GCompris</button>
+                </div>
+
+                <!-- OS Handbook -->
                 <div class="card book-card">
                     <div class="book-icon"><i class="fa-solid fa-book-open"></i></div>
                     <h3>Operating Systems Handbook</h3>
-                    <p>Learn the structural principles of kernels, process management, filesystems, and shells.</p>
+                    <span class="badge badge-muted">eBook</span>
+                    <p>Learn the structural principles of kernels, monolithic vs microkernel architecture, process scheduling, and virtual filesystems.</p>
                     <button class="btn btn-secondary" onclick="viewBook('os')">Open Book</button>
                 </div>
+
+                <!-- Calculus Handbook -->
                 <div class="card book-card">
                     <div class="book-icon"><i class="fa-solid fa-square-root-variable"></i></div>
-                    <h3>Calculus and Analytical Geometry</h3>
-                    <p>Deep dive into limits, derivatives, integrals, infinite series, and vector algebra basics.</p>
+                    <h3>Calculus & Geometry</h3>
+                    <span class="badge badge-muted">eBook</span>
+                    <p>Deep dive into limits, derivatives, integration, vector analytical geometry, double angle identities, and mathematical proofs.</p>
                     <button class="btn btn-secondary" onclick="viewBook('calc')">Open Book</button>
                 </div>
+
+                <!-- Comp Arch Handbook -->
                 <div class="card book-card">
                     <div class="book-icon"><i class="fa-solid fa-terminal"></i></div>
                     <h3>Computer Architecture & Shells</h3>
-                    <p>Introduction to registers, CPU instruction sets, caching architectures, and POSIX scripting.</p>
+                    <span class="badge badge-muted">eBook</span>
+                    <p>Introduction to processor registers, cache hierarchies (L1, L2, L3), instruction sets, and shell-script automation in POSIX systems.</p>
                     <button class="btn btn-secondary" onclick="viewBook('arch')">Open Book</button>
                 </div>
             </div>
+
             <!-- Book Viewer Modal -->
             <div id="book-viewer" class="book-viewer-modal" style="display: none;">
                 <div class="modal-content">
@@ -288,6 +329,175 @@
                     </div>
                     <div class="modal-body" id="book-body">
                         <!-- Book chapters here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bangla Typing Panel -->
+        <section id="language" class="panel">
+            <h2 class="panel-section-title"><i class="fa-solid fa-language"></i> Out-of-the-Box Bengali Phonetic Input</h2>
+            <p class="panel-section-subtitle">Type Bengali fluently using phonetic translation (type English words, get Bangla script outputs). Completely pre-configured.</p>
+
+            <div class="language-layout">
+                <div class="card text-card">
+                    <h3>How to use Bangla Keyboard</h3>
+                    <ol class="step-list">
+                        <li>
+                            <div class="step-num">1</div>
+                            <div class="step-text"><strong>Switch Layouts:</strong> Press <kbd>Super + Space</kbd> (Windows Key + Space) to toggle input source between English (US) and Bangla (Phonetic).</div>
+                        </li>
+                        <li>
+                            <div class="step-num">2</div>
+                            <div class="step-text"><strong>Visual Indicator:</strong> GNOME's top right header status bar will change from <code>en</code> to <code>বাং</code> to indicate active Bangla typing.</div>
+                        </li>
+                        <li>
+                            <div class="step-num">3</div>
+                            <div class="step-text"><strong>Start Typing:</strong> Type phonetically (e.g., type <code>bangla</code> to get <code>বাংলা</code>). The smart suggestions display will help autocomplete.</div>
+                        </li>
+                    </ol>
+
+                    <div class="kbd-shortcuts" style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px;">
+                        <h4>Keyboard Hotkey:</h4>
+                        <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                            <span class="kbd-btn"><i class="fa-brands fa-windows"></i> Super</span> + <span class="kbd-btn">Spacebar</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card table-card">
+                    <h3>Phonetic Mapping Guide</h3>
+                    <div class="table-container">
+                        <table class="guide-table">
+                            <thead>
+                                <tr>
+                                    <th>English Keystrokes</th>
+                                    <th>Bangla Output</th>
+                                    <th>English Meaning</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>ami</code></td>
+                                    <td><span class="bangla-text">আমি</span></td>
+                                    <td>I</td>
+                                </tr>
+                                <tr>
+                                    <td><code>bangla</code></td>
+                                    <td><span class="bangla-text">বাংলা</span></td>
+                                    <td>Bengali</td>
+                                </tr>
+                                <tr>
+                                    <td><code>bhasha</code></td>
+                                    <td><span class="bangla-text">ভাষা</span></td>
+                                    <td>Language</td>
+                                </tr>
+                                <tr>
+                                    <td><code>desh</code></td>
+                                    <td><span class="bangla-text">দেশ</span></td>
+                                    <td>Country</td>
+                                </tr>
+                                <tr>
+                                    <td><code>shunro</code></td>
+                                    <td><span class="bangla-text">শূন্য</span></td>
+                                    <td>Zero / Sky</td>
+                                </tr>
+                                <tr>
+                                    <td><code>shikkhok</code></td>
+                                    <td><span class="bangla-text">শিক্ষক</span></td>
+                                    <td>Teacher</td>
+                                </tr>
+                                <tr>
+                                    <td><code>biddaloy</code></td>
+                                    <td><span class="bangla-text">বিদ্যালয়</span></td>
+                                    <td>School</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Practice Zone -->
+            <div class="card practice-card">
+                <h3>Phonetic Input Practice Sandbox</h3>
+                <p>Toggle your OS input keyboard to <strong>Bangla (Phonetic)</strong> using <kbd>Super + Space</kbd> and practice typing your name and study notes below:</p>
+                <textarea class="practice-area" placeholder="Type here..." id="language-practice-area"></textarea>
+                <div class="practice-footer">
+                    <span id="char-counter">0 characters</span>
+                    <button class="btn btn-secondary btn-small" onclick="clearPractice()">Clear Area</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- USB Persistence Panel -->
+        <section id="persistence" class="panel">
+            <h2 class="panel-section-title"><i class="fa-solid fa-floppy-disk"></i> Live USB Persistence Configuration</h2>
+            <p class="panel-section-subtitle">Learn how to flash the Agami OS ISO to a flash drive and enable persistence to save files, browser histories, and installed software.</p>
+
+            <div class="persistence-layout">
+                <div class="card text-card">
+                    <h3>What is Live Persistence?</h3>
+                    <p>Usually, running an OS from a Live USB is read-only. Any file you download, document you write, or wallpaper setting you change will disappear after rebooting. 
+                       <strong>Persistence</strong> creates a separate writeable storage partition on your USB flash drive. This allows the system to save changes securely across sessions.</p>
+                    
+                    <h3 style="margin-top: 24px;">Benefits for Schools & Labs:</h3>
+                    <ul class="benefits-list">
+                        <li><i class="fa-solid fa-circle-check" style="color: var(--primary);"></i> Download and retain learning materials offline.</li>
+                        <li><i class="fa-solid fa-circle-check" style="color: var(--primary);"></i> Install new programming languages or STEM kits permanently.</li>
+                        <li><i class="fa-solid fa-circle-check" style="color: var(--primary);"></i> Saves student settings, languages, and custom desktop shortcuts.</li>
+                    </ul>
+                </div>
+
+                <div class="card visual-guide-card">
+                    <h3>Easy Flashing Options</h3>
+                    
+                    <!-- Rufus Accordion Detail -->
+                    <div class="flash-guide-box">
+                        <div class="guide-header">
+                            <span class="guide-title"><i class="fa-solid fa-circle-play" style="color: var(--primary);"></i> Flashing with Rufus (Recommended)</span>
+                        </div>
+                        <div class="guide-body-text">
+                            <p>Rufus is a lightweight, high-performance Windows tool that natively configures Live Persistence partitions.</p>
+                            <ol class="rufus-steps">
+                                <li>Insert a 16GB+ USB Flash Drive. Launch **Rufus**.</li>
+                                <li>Select the `Agami_OS_Education.iso` in Boot Selection.</li>
+                                <li><strong>Important Slider:</strong> Set the **Persistent Partition Size** slider (recommend 4GB to 12GB depending on flash size).</li>
+                                <li>Select **FAT32** or **NTFS** and click **START**.</li>
+                            </ol>
+                            <div class="slider-mockup" style="margin-top: 15px; padding: 12px; border: 1px solid var(--glass-border); border-radius: 8px; background: rgba(0,0,0,0.25);">
+                                <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 5px;">Rufus Persistent Partition Slider Configuration</span>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-weight: bold; font-size: 0.85rem;">0 GB</span>
+                                    <input type="range" min="0" max="10" value="6" style="flex-grow:1; accent-color: var(--primary);" disabled>
+                                    <span style="font-weight: bold; font-size: 0.85rem; color: var(--primary);">6.0 GB [Active]</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ventoy Accordion Detail -->
+                    <div class="flash-guide-box" style="margin-top: 16px;">
+                        <div class="guide-header">
+                            <span class="guide-title"><i class="fa-solid fa-circle-play" style="color: var(--secondary);"></i> Flashing with Ventoy</span>
+                        </div>
+                        <div class="guide-body-text">
+                            <p>Ventoy allows copy-pasting multiple ISOs on a single USB. It requires generating a configuration file for persistence.</p>
+                            <ol class="ventoy-steps">
+                                <li>Download **Ventoy** and install it on your USB drive.</li>
+                                <li>Download the persistence file template <code>persistence.dat</code> from Ventoy's official plugin page.</li>
+                                <li>Create a directory named `ventoy` inside the root of your USB flash drive and place a file named `ventoy.json` with the following configuration:</li>
+                            </ol>
+                            <pre class="code-block" style="margin-top: 10px; background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; font-size: 0.8rem; border: 1px solid var(--glass-border); color: #00f2fe; font-family: var(--font-mono); overflow-x: auto;">
+{
+    "persistence": [
+        {
+            "image": "/Agami_OS_Education.iso",
+            "backend": "/persistence.dat"
+        }
+    ]
+}</pre>
+                        </div>
                     </div>
                 </div>
             </div>

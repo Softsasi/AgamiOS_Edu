@@ -146,6 +146,22 @@ def main():
     subprocess.run(cmd_7z, check=True)
     print("ISO successfully extracted.\n")
 
+    # Overwrite GRUB and ISOLINUX splash screen images
+    print("Injecting custom Agami themed boot splash screens...")
+    boot_splash_src = os.path.join(BASE_DIR, "boot_splash.png")
+    if os.path.exists(boot_splash_src):
+        grub_splash_dest = os.path.join(ISO_EXTRACTED, "boot", "grub", "splash.png")
+        isolinux_splash_dest = os.path.join(ISO_EXTRACTED, "isolinux", "splash.png")
+        
+        os.makedirs(os.path.dirname(grub_splash_dest), exist_ok=True)
+        os.makedirs(os.path.dirname(isolinux_splash_dest), exist_ok=True)
+        
+        shutil.copy2(boot_splash_src, grub_splash_dest)
+        shutil.copy2(boot_splash_src, isolinux_splash_dest)
+        print("GRUB and ISOLINUX splash screens successfully customized.\n")
+    else:
+        print("Warning: boot_splash.png not found. Skipping boot splash customization.\n")
+
     # 5. Extract SquashFS root filesystem into uncompressed Tar archive
     print("--- [Step 5/9] Translating SquashFS root filesystem into POSIX Tar archive ---")
     squashfs_file = os.path.join(ISO_EXTRACTED, "live", "filesystem.squashfs")
@@ -218,6 +234,10 @@ gsettings set org.gnome.desktop.background picture-options "zoom"
 # Set Screensaver Background
 gsettings set org.gnome.desktop.screensaver picture-uri "file:///usr/share/backgrounds/agami_wallpaper.png"
 
+# Configure standard GNOME input sources for English and Bangla phonetic typing
+gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('ibus', 'm17n:bn:phonetic')]"
+gsettings set org.gnome.desktop.input-sources show-all-sources true
+
 # Ensure desktop shortcuts are executable
 chmod +x /home/user/Desktop/agami-hub.desktop 2>/dev/null
 chmod +x /home/user/Desktop/agami-install-software.desktop 2>/dev/null
@@ -251,8 +271,8 @@ fi
 echo -e "${YELLOW}Step 1/8: Updating and Upgrading System Repositories...${NC}"
 apt update && apt upgrade -y
 
-echo -e "\\n${YELLOW}Step 2/8: Installing LibreOffice & PDF/eBook Viewers...${NC}"
-apt install -y libreoffice libreoffice-l10n-en-us libreoffice-help-en-us evince calibre xournalpp
+echo -e "\\n${YELLOW}Step 2/8: Installing LibreOffice, Kiwix Offline & PDF/eBook Viewers...${NC}"
+apt install -y libreoffice libreoffice-l10n-en-us libreoffice-help-en-us evince calibre xournalpp kiwix-desktop libreoffice-l10n-bn
 
 echo -e "\\n${YELLOW}Step 3/8: Setting up Brave Secure Web Browser...${NC}"
 apt install -y curl apt-transport-https
@@ -272,8 +292,8 @@ apt install -y scratch thonny geany arduino bluej
 echo -e "\\n${YELLOW}Step 7/8: Installing High-End Multimedia & Creative suites...${NC}"
 apt install -y gimp inkscape krita kdenlive audacity musescore3
 
-echo -e "\\n${YELLOW}Step 8/8: Installing System utilities, Security & Accessibility...${NC}"
-apt install -y flatpak timeshift orca onboard redshift redshift-gtk synaptic keepassxc clamav clamav-daemon clamtk ufw
+echo -e "\\n${YELLOW}Step 8/8: Installing System utilities, Security, Bangla localization & Accessibility...${NC}"
+apt install -y flatpak timeshift orca onboard redshift redshift-gtk synaptic keepassxc clamav clamav-daemon clamtk ufw ibus-m17n m17n-db task-bengali task-bengali-desktop locales locales-all fonts-beng
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 ufw enable || true
 
@@ -285,7 +305,7 @@ echo -e "\\n${YELLOW}Cleaning up package cache...${NC}"
 apt autoremove -y && apt clean
 
 echo -e "\\n${GREEN}=========================================================================="
-echo -e "🎉 SUCCESS! All educational software packages have been installed!"
+echo -e "SUCCESS! All educational software packages have been installed!"
 echo -e "You can now find them in your GNOME Applications Menu!"
 echo -e "==========================================================================${NC}"
 """
