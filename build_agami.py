@@ -5,6 +5,8 @@ import urllib.request
 import zipfile
 import subprocess
 import re
+import shlex
+import time
 
 # ==========================================================================
 # Configuration and Path Definitions
@@ -13,13 +15,13 @@ import re
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 TOOLS_DIR = os.path.join(BASE_DIR, "tools")
 ISO_EXTRACTED = os.path.join(BASE_DIR, "iso_extracted")
-SQUASHFS_EXTRACTED = os.path.join(BASE_DIR, "squashfs_extracted")
 
 BASE_ISO_NAME = "debian-live-13.5.0-amd64-gnome.iso"
 BASE_ISO_URL = f"https://cdimage.debian.org/debian-cd/current-live/amd64/iso-hybrid/{BASE_ISO_NAME}"
 BASE_ISO_PATH = os.path.join(BASE_DIR, "base.iso")
 
-OUTPUT_ISO_PATH = os.path.join(BASE_DIR, "Agami_OS_Education.iso")
+OUTPUT_ISO_NAME = "Agami_OS_Education.iso"
+OUTPUT_ISO_PATH = os.path.join(BASE_DIR, OUTPUT_ISO_NAME)
 
 SEVEN_ZIP_PATH = r"C:\Program Files\7-Zip\7z.exe"
 
@@ -52,6 +54,8 @@ def main():
     print("          Agami OS Education - Windows Native Build System                ")
     print("==========================================================================\n")
     
+    global_start_time = time.time()
+    
     # 0. Setup directories
     os.makedirs(TOOLS_DIR, exist_ok=True)
     
@@ -73,13 +77,17 @@ def main():
     squashfs_zip = os.path.join(TOOLS_DIR, "squashfs-tools-ng.zip")
     squashfs_zip_url = "https://infraroot.at/pub/squashfs/windows/squashfs-tools-ng-1.3.2-mingw64.zip"
     
-    if not os.path.exists(os.path.join(TOOLS_DIR, "mksquashfs.exe")):
+    # We require gensquashfs.exe, rdsquashfs.exe, sqfs2tar.exe, tar2sqfs.exe and all DLL dependencies
+    required_binaries = ["gensquashfs.exe", "rdsquashfs.exe", "sqfs2tar.exe", "tar2sqfs.exe", "libsquashfs.dll"]
+    missing_binaries = [b for b in required_binaries if not os.path.exists(os.path.join(TOOLS_DIR, b))]
+    
+    if missing_binaries:
+        print("Downloading SquashFS Tools NG...")
         download_file(squashfs_zip_url, squashfs_zip)
-        print("Extracting SquashFS tools...")
+        print("Extracting SquashFS Tools NG...")
         with zipfile.ZipFile(squashfs_zip, 'r') as zip_ref:
-            # We want to extract bin/mksquashfs.exe and bin/unsquashfs.exe
             for file in zip_ref.namelist():
-                if file.startswith("bin/"):
+                if "/bin/" in file:
                     filename = os.path.basename(file)
                     if filename:
                         dest = os.path.join(TOOLS_DIR, filename)
@@ -138,44 +146,40 @@ def main():
     subprocess.run(cmd_7z, check=True)
     print("ISO successfully extracted.\n")
 
-    # 5. Extract SquashFS root filesystem
-    print("--- [Step 5/9] Extracting compressed root filesystem (SquashFS) ---")
-    if os.path.exists(SQUASHFS_EXTRACTED):
-        print("Cleaning previous extracted SquashFS directory...")
-        shutil.rmtree(SQUASHFS_EXTRACTED)
-        
-    unsquashfs_bin = os.path.join(TOOLS_DIR, "unsquashfs.exe")
+    # 5. Extract SquashFS root filesystem into uncompressed Tar archive
+    print("--- [Step 5/9] Translating SquashFS root filesystem into POSIX Tar archive ---")
     squashfs_file = os.path.join(ISO_EXTRACTED, "live", "filesystem.squashfs")
+    tar_file = os.path.join(BASE_DIR, "filesystem.tar")
     
-    cmd_unsquash = [unsquashfs_bin, "-d", SQUASHFS_EXTRACTED, squashfs_file]
-    print(f"Running: {' '.join(cmd_unsquash)}")
-    subprocess.run(cmd_unsquash, check=True)
-    print("Root filesystem successfully extracted.\n")
+    if os.path.exists(tar_file):
+        os.remove(tar_file)
+        
+    sqfs2tar_bin = os.path.join(TOOLS_DIR, "sqfs2tar.exe")
+    print(f"Running sqfs2tar: {sqfs2tar_bin} {squashfs_file} -> {tar_file}")
+    
+    start_time = time.time()
+    with open(tar_file, 'wb') as f:
+        subprocess.run([sqfs2tar_bin, squashfs_file], stdout=f, check=True)
+    print(f"Root filesystem translated successfully in {time.time() - start_time:.2f} seconds.\n")
 
-    # 6. Apply Agami OS Customizations & Inject Educational Dashboard
-    print("--- [Step 6/9] Customizing OS & Injecting Agami Education Hub ---")
+    # 6. Apply Agami OS Customizations & Inject Educational Dashboard into Tar
+    print("--- [Step 6/9] Streaming customizations and assets into Tar archive ---")
+    custom_tar_file = os.path.join(BASE_DIR, "filesystem_custom.tar")
+    if os.path.exists(custom_tar_file):
+        os.remove(custom_tar_file)
+        
+    hub_src_dir = os.path.join(BASE_DIR, "agami_hub")
     
-    # 6a. Copy Premium Wallpapers
-    bg_dir = os.path.join(SQUASHFS_EXTRACTED, "usr", "share", "backgrounds")
-    os.makedirs(bg_dir, exist_ok=True)
-    shutil.copy(wallpaper_path, os.path.join(bg_dir, "agami_wallpaper.png"))
-    
-    # 6b. Copy Brand Logos
-    pixmaps_dir = os.path.join(SQUASHFS_EXTRACTED, "usr", "share", "pixmaps")
-    os.makedirs(pixmaps_dir, exist_ok=True)
-    shutil.copy(logo_path, os.path.join(pixmaps_dir, "agami-logo.png"))
-    
-    # 6c. Copy Agami Education Hub HTML dashboard
-    hub_dest = os.path.join(SQUASHFS_EXTRACTED, "usr", "share", "agami-hub")
-    if os.path.exists(hub_dest):
-        shutil.rmtree(hub_dest)
-    shutil.copytree(os.path.join(BASE_DIR, "agami_hub"), hub_dest)
-    
-    # 6d. Create desktop shortcuts & folders inside Skeleton (/etc/skel/)
-    skel_desktop = os.path.join(SQUASHFS_EXTRACTED, "etc", "skel", "Desktop")
-    os.makedirs(skel_desktop, exist_ok=True)
-    
-    # Create the Desktop Entry launcher
+    # Custom files to inject
+    overrides = {
+        "usr/share/backgrounds/agami_wallpaper.png",
+        "usr/share/pixmaps/agami-logo.png",
+        "etc/skel/Desktop/agami-hub.desktop",
+        "usr/local/bin/agami-init.sh",
+        "etc/xdg/autostart/agami-init.desktop",
+    }
+
+    # Desktop Entry Launcher Content
     launcher_content = """[Desktop Entry]
 Version=1.0
 Type=Application
@@ -186,15 +190,8 @@ Icon=/usr/share/pixmaps/agami-logo.png
 Terminal=false
 Categories=Education;Development;
 """
-    launcher_path = os.path.join(skel_desktop, "agami-hub.desktop")
-    with open(launcher_path, 'w', encoding='utf-8') as f:
-        f.write(launcher_content)
-        
-    # 6e. Setup Boot-Time Autostart Settings (Wallpaper & settings daemon)
-    bin_dir = os.path.join(SQUASHFS_EXTRACTED, "usr", "local", "bin")
-    os.makedirs(bin_dir, exist_ok=True)
-    
-    # Runtime initialization script (runs when GNOME boots inside Live OS)
+
+    # Init Script Content
     init_script_content = """#!/bin/bash
 # Wait for D-Bus and GSettings services to initialize
 sleep 3
@@ -211,14 +208,8 @@ gsettings set org.gnome.desktop.screensaver picture-uri "file:///usr/share/backg
 chmod +x /home/user/Desktop/agami-hub.desktop 2>/dev/null
 chmod +x /etc/skel/Desktop/agami-hub.desktop 2>/dev/null
 """
-    init_script_path = os.path.join(bin_dir, "agami-init.sh")
-    with open(init_script_path, 'w', newline='\n', encoding='utf-8') as f:
-        f.write(init_script_content)
-        
-    # Register the autostart .desktop configuration
-    autostart_dir = os.path.join(SQUASHFS_EXTRACTED, "etc", "xdg", "autostart")
-    os.makedirs(autostart_dir, exist_ok=True)
-    
+
+    # Autostart Entry Content
     autostart_content = """[Desktop Entry]
 Type=Application
 Name=Agami OS Init Daemon
@@ -226,72 +217,160 @@ Exec=/usr/local/bin/agami-init.sh
 Terminal=false
 NoDisplay=true
 """
-    autostart_path = os.path.join(autostart_dir, "agami-init.desktop")
-    with open(autostart_path, 'w', encoding='utf-8') as f:
-        f.write(autostart_content)
-        
-    print("Agami OS customizations successfully injected.\n")
 
-    # 7. Repack filesystem using mksquashfs
+    import io
+    start_time = time.time()
+    
+    with tarfile.open(tar_file, 'r') as tar_in, tarfile.open(custom_tar_file, 'w') as tar_out:
+        count = 0
+        copied = 0
+        skipped = 0
+        
+        for member in tar_in:
+            count += 1
+            name = member.name.lstrip("./")
+            if name in overrides or name.startswith("usr/share/agami-hub/"):
+                skipped += 1
+                continue
+                
+            if member.isfile():
+                f = tar_in.extractfile(member)
+                tar_out.addfile(member, f)
+            else:
+                tar_out.addfile(member)
+            copied += 1
+            
+        # 1. Custom Wallpaper
+        info = tarfile.TarInfo(name="usr/share/backgrounds/agami_wallpaper.png")
+        info.size = os.path.getsize(wallpaper_path)
+        info.mode = 0o644
+        info.uid = 0
+        info.gid = 0
+        info.uname = "root"
+        info.gname = "root"
+        with open(wallpaper_path, 'rb') as f:
+            tar_out.addfile(info, f)
+
+        # 2. Custom Logo
+        info = tarfile.TarInfo(name="usr/share/pixmaps/agami-logo.png")
+        info.size = os.path.getsize(logo_path)
+        info.mode = 0o644
+        info.uid = 0
+        info.gid = 0
+        info.uname = "root"
+        info.gname = "root"
+        with open(logo_path, 'rb') as f:
+            tar_out.addfile(info, f)
+
+        # 3. Desktop Shortcut
+        shortcut_data = launcher_content.encode('utf-8')
+        info = tarfile.TarInfo(name="etc/skel/Desktop/agami-hub.desktop")
+        info.size = len(shortcut_data)
+        info.mode = 0o755
+        info.uid = 0
+        info.gid = 0
+        info.uname = "root"
+        info.gname = "root"
+        tar_out.addfile(info, io.BytesIO(shortcut_data))
+
+        # 4. Init Script
+        init_data = init_script_content.encode('utf-8')
+        info = tarfile.TarInfo(name="usr/local/bin/agami-init.sh")
+        info.size = len(init_data)
+        info.mode = 0o755
+        info.uid = 0
+        info.gid = 0
+        info.uname = "root"
+        info.gname = "root"
+        tar_out.addfile(info, io.BytesIO(init_data))
+
+        # 5. Autostart Desktop Entry
+        autostart_data = autostart_content.encode('utf-8')
+        info = tarfile.TarInfo(name="etc/xdg/autostart/agami-init.desktop")
+        info.size = len(autostart_data)
+        info.mode = 0o644
+        info.uid = 0
+        info.gid = 0
+        info.uname = "root"
+        info.gname = "root"
+        tar_out.addfile(info, io.BytesIO(autostart_data))
+
+        # 6. Agami Education Hub HTML files
+        for root, dirs, files in os.walk(hub_src_dir):
+            for file in files:
+                full_path = os.path.join(root, file)
+                rel_path = os.path.relpath(full_path, hub_src_dir).replace('\\', '/')
+                tar_path = f"usr/share/agami-hub/{rel_path}"
+                
+                info = tarfile.TarInfo(name=tar_path)
+                info.size = os.path.getsize(full_path)
+                info.mode = 0o644
+                info.uid = 0
+                info.gid = 0
+                info.uname = "root"
+                info.gname = "root"
+                with open(full_path, 'rb') as f:
+                    tar_out.addfile(info, f)
+                    
+    # Clean up unmodified input tar file
+    os.remove(tar_file)
+    print(f"Branding and portal successfully injected in {time.time() - start_time:.2f} seconds.\n")
+
+    # 7. Repack filesystem using tar2sqfs
     print("--- [Step 7/9] Repacking customized root filesystem (SquashFS) ---")
     
-    # Delete old squashfs from the extracted ISO structure before building a new one
+    # Delete old squashfs from the extracted ISO structure
     if os.path.exists(squashfs_file):
         os.remove(squashfs_file)
         
-    mksquashfs_bin = os.path.join(TOOLS_DIR, "mksquashfs.exe")
-    cmd_mksquash = [mksquashfs_bin, SQUASHFS_EXTRACTED, squashfs_file, "-comp", "gzip", "-noappend"]
-    print(f"Running: {' '.join(cmd_mksquash)}")
-    subprocess.run(cmd_mksquash, check=True)
-    print("SquashFS repacked successfully.\n")
+    tar2sqfs_bin = os.path.join(TOOLS_DIR, "tar2sqfs.exe")
+    
+    # Detect CPU jobs
+    cpu_count = os.cpu_count() or 4
+    print(f"Compressing with {cpu_count} threads using xz...")
+    
+    start_time = time.time()
+    with open(custom_tar_file, 'rb') as infile:
+        subprocess.run(
+            [tar2sqfs_bin, "--compressor", "xz", "-j", str(cpu_count), "--force", squashfs_file],
+            stdin=infile,
+            check=True
+        )
+        
+    # Clean up custom tar file
+    os.remove(custom_tar_file)
+    print(f"SquashFS compressed and repacked successfully in {time.time() - start_time:.2f} seconds.\n")
 
     # 8. Extract original El Torito boot params from base.iso
     print("--- [Step 8/9] Extracting original bootloader layout parameters ---")
     xorriso_bin = os.path.join(TOOLS_DIR, "xorriso.exe")
     
-    # We run xorriso -indev base.iso -report_el_torito as_mkisofs to fetch original boot configs
     cmd_report = [xorriso_bin, "-indev", BASE_ISO_PATH, "-report_el_torito", "as_mkisofs"]
     print(f"Running: {' '.join(cmd_report)}")
     res = subprocess.run(cmd_report, capture_output=True, text=True, check=True)
     
     # Parse output to extract options
     original_args = res.stdout.strip().splitlines()
-    print("Original boot arguments detected:")
-    
     clean_args = []
-    skip_next = False
     
-    # Filter arguments to remove original directories and output paths
     for line in original_args:
         line = line.strip()
-        if not line or line.startswith("\\"):
+        if not line:
+            continue
+        if any(line.startswith(prefix) for prefix in ["xorriso", "Drive current", "Media current", "Media status", "Boot record", "Media summary", "Volume id"]):
+            continue
+        if "-isohybrid-mbr" in line:
             continue
         
-        # Split tokens
-        tokens = re.split(r'\s+', line)
-        for i, token in enumerate(tokens):
-            if skip_next:
-                skip_next = False
-                continue
+        try:
+            tokens = shlex.split(line)
+            if len(tokens) >= 2 and tokens[0] == "-V":
+                tokens[1] = "Agami_OS_Edu"
+            clean_args.extend(tokens)
+        except Exception as e:
+            print(f"Error parsing line '{line}': {e}")
             
-            # Skip output parameters, source dirs, and isolinux MBR (since we replace it)
-            if token in ["-o", "--output", "-out"]:
-                skip_next = True
-                continue
-            if token == "-isohybrid-mbr":
-                skip_next = True
-                continue
-            if token == "-as" and i < len(tokens) - 1 and tokens[i+1] == "mkisofs":
-                continue
-            if token == "mkisofs":
-                continue
-            if token.startswith("/") or token.startswith("."):
-                # Skip source directories (which are absolute paths on the original build server)
-                continue
-                
-            clean_args.append(token)
-            
-    print(f"Sanitized arguments: {clean_args}\n")
+    print(f"Sanitized arguments compiled.\n")
 
     # 9. Generate bootable Hybrid ISO using xorriso
     print("--- [Step 9/9] Generating bootable Hybrid ISO image ---")
@@ -299,29 +378,26 @@ NoDisplay=true
     if os.path.exists(OUTPUT_ISO_PATH):
         os.remove(OUTPUT_ISO_PATH)
         
-    # Build complete execution argument list
     xorriso_args = [
         xorriso_bin,
         "-as", "mkisofs",
     ]
-    
-    # Append the sanitized bootloader configurations
     xorriso_args.extend(clean_args)
-    
-    # Append our custom Windows output paths & hybrid parameters
     xorriso_args.extend([
-        "-isohybrid-mbr", os.path.join(TOOLS_DIR, "isohdpfx.bin"),
-        "-o", OUTPUT_ISO_PATH,
-        ISO_EXTRACTED
+        "-isohybrid-mbr", "tools/isohdpfx.bin",
+        "-o", OUTPUT_ISO_NAME,
+        "iso_extracted"
     ])
     
-    print(f"Running: {' '.join(xorriso_args)}")
-    subprocess.run(xorriso_args, check=True)
+    print(f"Running final xorriso compilation in base directory...")
+    subprocess.run(xorriso_args, cwd=BASE_DIR, check=True)
     
     print("\n==========================================================================")
     print("🎉 SUCCESS! Agami OS Education has been built successfully!")
     print(f"Output File: {OUTPUT_ISO_PATH}")
+    print(f"Total Time Taken: {(time.time() - global_start_time)/60:.2f} minutes")
     print("==========================================================================\n")
 
 if __name__ == "__main__":
+    import tarfile
     main()
